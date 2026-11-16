@@ -1,0 +1,277 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Computer Lab Management</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f3f5fa;
+        }
+
+        .sidebar {
+            width: 230px;
+            height: 100vh;
+            background: #1b2e4b;
+            color: white;
+            position: fixed;
+            padding: 20px 16px;
+        }
+
+        .sidebar h2 {
+            margin-bottom: 45px;
+        }
+
+        .sidebar a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 15px 12px;
+        }
+
+        .sidebar a:hover {
+            background: #304b70;
+        }
+
+        .main {
+            margin-left: 230px;
+            padding: 25px 30px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        input {
+            padding: 13px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            width: 100%;
+        }
+
+        button {
+            background: #2859a5;
+            color: white;
+            padding: 12px 22px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1b407d;
+        }
+
+        .edit {
+            color: #2859a5;
+            text-decoration: none;
+        }
+
+        .delete {
+            color: red;
+            text-decoration: none;
+        }
+
+        .cancel {
+            color: #555;
+            margin-left: 12px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 14px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #edf1f7;
+        }
+
+        @media (max-width: 750px) {
+            .sidebar {
+                width: 160px;
+            }
+
+            .main {
+                margin-left: 160px;
+                padding: 15px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+
+    <h2>Training System</h2>
+
+    <a th:href="@{/dashboard}">Dashboard</a>
+    <a th:href="@{/trainers}">Trainers</a>
+    <a th:href="@{/labs}">Computer Labs</a>
+    <a th:href="@{/sessions}">Training Sessions</a>
+    <a th:href="@{/}">Logout</a>
+
+</div>
+
+<!-- Main Content -->
+<div class="main">
+
+    <div class="topbar">
+        <h2>Computer Lab Management</h2>
+        <span>Admin</span>
+    </div>
+
+    <!-- Add / Edit Lab Form -->
+    <div class="card">
+
+        <h3 th:if="${lab.labId != 0}">
+            Edit Lab
+        </h3>
+
+        <h3 th:if="${lab.labId == 0}">
+            Add New Lab
+        </h3>
+
+        <form th:action="@{/labs/save}"
+              th:object="${lab}"
+              method="post">
+
+            <input type="hidden" th:field="*{labId}">
+
+            <div class="form-grid">
+
+                <input type="text"
+                       th:field="*{labName}"
+                       placeholder="Lab Name"
+                       required>
+
+                <input type="number"
+                       th:field="*{capacity}"
+                       placeholder="Lab Capacity"
+                       min="1"
+                       required>
+
+                <input type="text"
+                       th:field="*{location}"
+                       placeholder="Lab Location"
+                       required>
+
+            </div>
+
+            <button type="submit"
+                    th:text="${lab.labId != 0}
+                             ? 'Update Lab'
+                             : 'Add Lab'">
+                Add Lab
+            </button>
+
+            <a th:if="${lab.labId != 0}"
+               th:href="@{/labs}"
+               class="cancel">
+                Cancel
+            </a>
+
+        </form>
+
+    </div>
+
+    <!-- Lab List -->
+    <div class="card">
+
+        <h3>Computer Lab List</h3>
+
+        <table>
+
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Lab Name</th>
+                <th>Capacity</th>
+                <th>Location</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+
+            <tbody>
+
+            <th:block th:each="l : ${labs}"
+                      th:if="${l != null}">
+
+                <tr>
+
+                    <td th:text="${l.labId}"></td>
+                    <td th:text="${l.labName}"></td>
+                    <td th:text="${l.capacity}"></td>
+                    <td th:text="${l.location}"></td>
+
+                    <td>
+
+                        <a class="edit"
+                           th:href="@{/labs/edit/{id}(id=${l.labId})}">
+                            Edit
+                        </a>
+
+                        |
+
+                        <a class="delete"
+                           th:href="@{/labs/delete/{id}(id=${l.labId})}"
+                           onclick="return confirm('Are you sure you want to delete this lab?')">
+                            Delete
+                        </a>
+
+                    </td>
+
+                </tr>
+
+            </th:block>
+
+            <tr th:if="${#lists.isEmpty(labs)}">
+                <td colspan="5">No labs added yet.</td>
+            </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+</body>
+</html>

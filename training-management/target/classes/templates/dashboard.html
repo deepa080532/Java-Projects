@@ -1,0 +1,305 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6fa;
+            color: #192b49;
+        }
+
+        .sidebar {
+            width: 240px;
+            height: 100vh;
+            background: #192b49;
+            color: white;
+            position: fixed;
+            padding: 25px 15px;
+        }
+
+        .sidebar h2 {
+            margin-bottom: 40px;
+            font-size: 21px;
+        }
+
+        .sidebar a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 14px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: #30476d;
+        }
+
+        .main {
+            margin-left: 240px;
+            padding: 30px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            gap: 15px;
+        }
+
+        .header h2 {
+            color: #192b49;
+        }
+
+        .welcome {
+            color: #666;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+            border-left: 5px solid #2456a6;
+        }
+
+        .card h3 {
+            color: #777;
+            font-size: 15px;
+            margin-bottom: 15px;
+        }
+
+        .card h1 {
+            color: #2456a6;
+            font-size: 32px;
+        }
+
+        .section {
+            background: white;
+            margin-top: 30px;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.04);
+        }
+
+        .section h2 {
+            margin-bottom: 18px;
+            font-size: 21px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            display: inline-block;
+            background: #2456a6;
+            color: white;
+            padding: 12px 18px;
+            border-radius: 6px;
+            text-decoration: none;
+        }
+
+        .action-btn:hover {
+            background: #192b49;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 650px;
+        }
+
+        th, td {
+            padding: 14px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: #f4f6fa;
+            color: #192b49;
+        }
+
+        td {
+            color: #555;
+        }
+
+        .empty {
+            text-align: center;
+            color: #888;
+        }
+
+        @media (max-width: 900px) {
+            .cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .sidebar {
+                width: 160px;
+            }
+
+            .main {
+                margin-left: 160px;
+                padding: 15px;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="sidebar">
+
+    <h2>Training System</h2>
+
+    <a th:href="@{/dashboard}" class="active">🏠 Dashboard</a>
+    <a th:href="@{/trainers}">👨‍🏫 Trainers</a>
+    <a th:href="@{/labs}">💻 Computer Labs</a>
+    <a th:href="@{/sessions}">📅 Training Sessions</a>
+    <a th:href="@{/logout}">🚪 Logout</a>
+
+</div>
+
+<div class="main">
+
+    <div class="header">
+        <h2>Admin Dashboard</h2>
+        <span class="welcome">Welcome, Admin!</span>
+    </div>
+
+    <!-- Dashboard Cards -->
+
+    <div class="cards">
+
+        <div class="card">
+            <h3>Total Trainers</h3>
+            <h1 th:text="${totalTrainers}">0</h1>
+        </div>
+
+        <div class="card">
+            <h3>Total Computer Labs</h3>
+            <h1 th:text="${totalLabs}">0</h1>
+        </div>
+
+        <div class="card">
+            <h3>Total Training Sessions</h3>
+            <h1 th:text="${totalSessions}">0</h1>
+        </div>
+
+    </div>
+
+    <!-- Quick Actions -->
+
+    <div class="section">
+
+        <h2>Quick Actions</h2>
+
+        <div class="actions">
+
+            <a th:href="@{/trainers}" class="action-btn">
+                + Add Trainer
+            </a>
+
+            <a th:href="@{/labs}" class="action-btn">
+                + Add Computer Lab
+            </a>
+
+            <a th:href="@{/sessions}" class="action-btn">
+                + Schedule Session
+            </a>
+
+        </div>
+
+    </div>
+
+    <!-- Training Sessions Table -->
+
+    <div class="section">
+
+        <h2>Training Sessions</h2>
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+                <tr>
+                    <th>Session Name</th>
+                    <th>Trainer</th>
+                    <th>Computer Lab</th>
+                    <th>Date</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                </tr>
+                </thead>
+
+                <tbody>
+
+                <tr th:each="s : ${recentSessions}">
+
+                    <td th:text="${s.sessionName}"></td>
+                    <td th:text="${s.trainer != null ? s.trainer.trainerName : 'Not assigned'}"></td>
+                    <td th:text="${s.lab != null ? s.lab.labName : 'Not assigned'}"></td>
+                    <td th:text="${s.sessionDate}"></td>
+                    <td th:text="${s.startTime}"></td>
+                    <td th:text="${s.endTime}"></td>
+
+                </tr>
+
+                <tr th:if="${#lists.isEmpty(recentSessions)}">
+                    <td colspan="6" class="empty">
+                        No training sessions scheduled yet.
+                    </td>
+                </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
+
